@@ -104,7 +104,7 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <Card className="bg-black/20 backdrop-blur-sm border-white/10 min-h-[500px]">
+      <Card className="bg-black/30 backdrop-blur-sm border-cyan-500/20 min-h-[500px] shadow-xl shadow-cyan-500/10">
         <div className="p-6 space-y-4">
           {messages.map((message) => (
             <div
@@ -114,8 +114,8 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
               <div
                 className={`max-w-[80%] p-4 rounded-lg ${
                   message.type === "user"
-                    ? "bg-gradient-to-r from-purple-500 to-blue-600 text-white"
-                    : "bg-white/10 text-gray-100 border border-white/20"
+                    ? "bg-gradient-to-r from-cyan-500 to-pink-600 text-black font-medium shadow-lg shadow-cyan-500/25"
+                    : "bg-black/40 text-cyan-100 border border-cyan-500/30 shadow-lg shadow-pink-500/10"
                 }`}
               >
                 <div className="whitespace-pre-line">{message.content}</div>
@@ -129,13 +129,13 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
           {/* Typing indicator and current response */}
           {(isTyping || currentResponse) && (
             <div className="flex justify-start">
-              <div className="max-w-[80%] p-4 rounded-lg bg-white/10 text-gray-100 border border-white/20">
+              <div className="max-w-[80%] p-4 rounded-lg bg-black/40 text-cyan-100 border border-cyan-500/30 shadow-lg shadow-pink-500/10">
                 <div className="whitespace-pre-line">{currentResponse}</div>
                 {isTyping && (
                   <div className="flex items-center space-x-1 mt-2">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce delay-100"></div>
-                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce delay-200"></div>
+                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-pink-400 rounded-full animate-bounce delay-100"></div>
+                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce delay-200"></div>
                   </div>
                 )}
               </div>
@@ -146,14 +146,14 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
 
       {/* Input area */}
       <div className="mt-4 flex items-center space-x-4">
-        <div className="flex-1 bg-black/20 backdrop-blur-sm border border-white/10 rounded-lg p-3">
-          <p className="text-gray-400">
+        <div className="flex-1 bg-black/30 backdrop-blur-sm border border-cyan-500/20 rounded-lg p-3 shadow-lg shadow-cyan-500/10">
+          <p className="text-cyan-300">
             Click on the tabs above to explore different sections, or ask me anything about my {activeTab}!
           </p>
         </div>
         <Button
           onClick={handleTabClick}
-          className="bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700"
+          className="bg-gradient-to-r from-cyan-500 to-pink-600 hover:from-cyan-400 hover:to-pink-500 text-black font-bold shadow-xl shadow-cyan-500/25 hover:shadow-pink-500/25 border border-cyan-400/50"
         >
           <Send className="w-4 h-4" />
         </Button>
