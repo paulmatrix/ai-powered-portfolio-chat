@@ -68,16 +68,14 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
     handleTabClick();
   }, [activeTab]);
 
-  const typeText = async (text: string) => {
+  const typeText = async (fullText: string) => {
     setCurrentResponse("");
-    const words = text.split(' ');
-    let currentText = "";
     
-    for (let i = 0; i < words.length; i++) {
-      currentText += (i > 0 ? " " : "") + words[i];
-      setCurrentResponse(currentText);
-      // Adjust typing speed - shorter delay for faster typing
-      await new Promise(resolve => setTimeout(resolve, 100));
+    // Type letter by letter
+    for (let i = 0; i <= fullText.length; i++) {
+      setCurrentResponse(fullText.slice(0, i));
+      // Adjust typing speed - faster for better UX
+      await new Promise(resolve => setTimeout(resolve, 30));
     }
   };
 
@@ -92,23 +90,12 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
     setMessages([userMessage]);
     setIsTyping(true);
 
-    // Get content for current tab
+    // Get content for current tab and join with line breaks
     const content = tabContent[activeTab as keyof typeof tabContent] || [];
-    let fullResponse = "";
+    const fullResponse = content.join('\n');
 
-    // Type each section with pauses between them
-    for (let i = 0; i < content.length; i++) {
-      const section = content[i];
-      fullResponse += (i > 0 ? "\n" : "") + section;
-      
-      // Type this section
-      await typeText(fullResponse);
-      
-      // Pause between sections (except for the last one)
-      if (i < content.length - 1) {
-        await new Promise(resolve => setTimeout(resolve, 800));
-      }
-    }
+    // Type the entire response letter by letter
+    await typeText(fullResponse);
 
     setIsTyping(false);
     
@@ -154,9 +141,7 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
                 <div className="whitespace-pre-line">{currentResponse}</div>
                 {isTyping && (
                   <div className="flex items-center space-x-1 mt-2">
-                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-pink-400 rounded-full animate-bounce delay-100"></div>
-                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce delay-200"></div>
+                    <div className="w-1 h-4 bg-cyan-400 animate-pulse"></div>
                   </div>
                 )}
               </div>
