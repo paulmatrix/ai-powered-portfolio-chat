@@ -68,6 +68,19 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
     handleTabClick();
   }, [activeTab]);
 
+  const typeText = async (text: string) => {
+    setCurrentResponse("");
+    const words = text.split(' ');
+    let currentText = "";
+    
+    for (let i = 0; i < words.length; i++) {
+      currentText += (i > 0 ? " " : "") + words[i];
+      setCurrentResponse(currentText);
+      // Adjust typing speed - shorter delay for faster typing
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  };
+
   const handleTabClick = async () => {
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -79,14 +92,22 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
     setMessages([userMessage]);
     setIsTyping(true);
 
-    // Simulate AI typing response
+    // Get content for current tab
     const content = tabContent[activeTab as keyof typeof tabContent] || [];
     let fullResponse = "";
 
+    // Type each section with pauses between them
     for (let i = 0; i < content.length; i++) {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      fullResponse += (i > 0 ? "\n" : "") + content[i];
-      setCurrentResponse(fullResponse);
+      const section = content[i];
+      fullResponse += (i > 0 ? "\n" : "") + section;
+      
+      // Type this section
+      await typeText(fullResponse);
+      
+      // Pause between sections (except for the last one)
+      if (i < content.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 800));
+      }
     }
 
     setIsTyping(false);
