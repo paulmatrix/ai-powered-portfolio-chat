@@ -87,8 +87,12 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
   const [currentResponse, setCurrentResponse] = useState("");
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isTypingRef = useRef(false);
+  const currentTabRef = useRef(activeTab);
 
   useEffect(() => {
+    // Update current tab reference
+    currentTabRef.current = activeTab;
+    
     // Stop any ongoing typing animation when tab changes
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
@@ -96,22 +100,32 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
     }
     isTypingRef.current = false;
     
-    // Clear messages and start new conversation
+    // Clear messages and start new conversation after a brief delay
     setMessages([]);
     setCurrentResponse("");
     setIsTyping(false);
-    handleTabClick();
+    
+    // Use setTimeout to ensure cleanup is complete before starting new animation
+    const startNewTab = setTimeout(() => {
+      if (currentTabRef.current === activeTab) {
+        handleTabClick();
+      }
+    }, 100);
+
+    return () => {
+      clearTimeout(startNewTab);
+    };
   }, [activeTab]);
 
-  const typeText = async (fullText: string) => {
+  const typeText = async (fullText: string, tabId: string) => {
     setCurrentResponse("");
     isTypingRef.current = true;
     
     // Type letter by letter
     for (let i = 0; i <= fullText.length; i++) {
-      // Check if typing should be stopped (tab changed)
-      if (!isTypingRef.current) {
-        return;
+      // Check if typing should be stopped (tab changed or component unmounted)
+      if (!isTypingRef.current || currentTabRef.current !== tabId) {
+        return false;
       }
       
       setCurrentResponse(fullText.slice(0, i));
@@ -123,13 +137,16 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
     }
     
     isTypingRef.current = false;
+    return true;
   };
 
   const handleTabClick = async () => {
+    const currentTab = currentTabRef.current;
+    
     const userMessage: Message = {
       id: Date.now().toString(),
       type: "user",
-      content: activeTab === "help" ? "Show me help options" : `Tell me about your ${activeTab}`,
+      content: currentTab === "help" ? "Show me help options" : `Tell me about your ${currentTab}`,
       timestamp: new Date(),
     };
 
@@ -137,14 +154,14 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
     setIsTyping(true);
 
     // Get content for current tab and join with line breaks
-    const content = tabContent[activeTab as keyof typeof tabContent] || [];
+    const content = tabContent[currentTab as keyof typeof tabContent] || [];
     const fullResponse = content.join('\n');
 
     // Type the entire response letter by letter
-    await typeText(fullResponse);
+    const completed = await typeText(fullResponse, currentTab);
 
-    // Only update if typing wasn't cancelled
-    if (isTypingRef.current === false && !typingTimeoutRef.current) {
+    // Only update if typing completed successfully and tab hasn't changed
+    if (completed && currentTabRef.current === currentTab) {
       setIsTyping(false);
       
       const aiMessage: Message = {
