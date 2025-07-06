@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChatInterface } from "@/components/ChatInterface";
@@ -12,6 +11,7 @@ const InteractivePortfolio = () => {
     { id: "skills", label: "Skills" },
     { id: "projects", label: "Projects" },
     { id: "experience", label: "Experience" },
+    { id: "help", label: "Help" },
   ];
 
   return (

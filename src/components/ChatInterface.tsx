@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Send } from "lucide-react";
+import { Send, Help } from "lucide-react";
 
 interface Message {
   id: string;
@@ -53,6 +53,31 @@ const tabContent = {
     "   • Created responsive websites using modern frontend frameworks",
     "   • Maintained and optimized existing codebases",
     "   • Participated in code reviews and best practices discussions"
+  ],
+  help: [
+    "🎯 Welcome to my interactive portfolio! Here are some helpful prompts you can try:",
+    "",
+    "💡 To learn about me:",
+    "• \"Tell me about yourself\"",
+    "• \"What's your background in tech?\"",
+    "• \"What do you enjoy doing when not coding?\"",
+    "",
+    "🛠️ To explore my skills:",
+    "• \"What technologies do you work with?\"",
+    "• \"Show me your frontend skills\"",
+    "• \"What's your experience with databases?\"",
+    "",
+    "🚀 To see my projects:",
+    "• \"What projects have you built?\"",
+    "• \"Tell me about your e-commerce platform\"",
+    "• \"Show me your most interesting project\"",
+    "",
+    "💼 To learn about my experience:",
+    "• \"What's your work experience?\"",
+    "• \"Tell me about your current role\"",
+    "• \"How did you start your career?\"",
+    "",
+    "✨ Pro tip: You can click on any tab above to automatically get information about that section!"
   ]
 };
 
@@ -83,7 +108,7 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
     const userMessage: Message = {
       id: Date.now().toString(),
       type: "user",
-      content: `Tell me about your ${activeTab}`,
+      content: activeTab === "help" ? "Show me help options" : `Tell me about your ${activeTab}`,
       timestamp: new Date(),
     };
 
@@ -154,14 +179,17 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
       <div className="mt-4 flex items-center space-x-4">
         <div className="flex-1 bg-black/30 backdrop-blur-sm border border-cyan-500/20 rounded-lg p-3 shadow-lg shadow-cyan-500/10">
           <p className="text-cyan-300">
-            Click on the tabs above to explore different sections, or ask me anything about my {activeTab}!
+            {activeTab === "help" 
+              ? "Use the example prompts above to explore my portfolio, or click on other tabs!"
+              : `Click on the tabs above to explore different sections, or ask me anything about my ${activeTab}!`
+            }
           </p>
         </div>
         <Button
           onClick={handleTabClick}
           className="bg-gradient-to-r from-cyan-500 to-pink-600 hover:from-cyan-400 hover:to-pink-500 text-black font-bold shadow-xl shadow-cyan-500/25 hover:shadow-pink-500/25 border border-cyan-400/50"
         >
-          <Send className="w-4 h-4" />
+          {activeTab === "help" ? <Help className="w-4 h-4" /> : <Send className="w-4 h-4" />}
         </Button>
       </div>
     </div>
