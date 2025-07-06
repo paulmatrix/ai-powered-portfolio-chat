@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Send, Help } from "lucide-react";
+import { Send, HelpCircle } from "lucide-react";
 
 interface Message {
   id: string;
@@ -189,7 +188,7 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
           onClick={handleTabClick}
           className="bg-gradient-to-r from-cyan-500 to-pink-600 hover:from-cyan-400 hover:to-pink-500 text-black font-bold shadow-xl shadow-cyan-500/25 hover:shadow-pink-500/25 border border-cyan-400/50"
         >
-          {activeTab === "help" ? <Help className="w-4 h-4" /> : <Send className="w-4 h-4" />}
+          {activeTab === "help" ? <HelpCircle className="w-4 h-4" /> : <Send className="w-4 h-4" />}
         </Button>
       </div>
     </div>
