@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+
+import { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Send, HelpCircle } from "lucide-react";
@@ -84,23 +85,44 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [currentResponse, setCurrentResponse] = useState("");
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isTypingRef = useRef(false);
 
   useEffect(() => {
-    // Clear messages when tab changes and start new conversation
+    // Stop any ongoing typing animation when tab changes
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = null;
+    }
+    isTypingRef.current = false;
+    
+    // Clear messages and start new conversation
     setMessages([]);
     setCurrentResponse("");
+    setIsTyping(false);
     handleTabClick();
   }, [activeTab]);
 
   const typeText = async (fullText: string) => {
     setCurrentResponse("");
+    isTypingRef.current = true;
     
     // Type letter by letter
     for (let i = 0; i <= fullText.length; i++) {
+      // Check if typing should be stopped (tab changed)
+      if (!isTypingRef.current) {
+        return;
+      }
+      
       setCurrentResponse(fullText.slice(0, i));
-      // Adjust typing speed - faster for better UX
-      await new Promise(resolve => setTimeout(resolve, 30));
+      
+      // Use timeout with ref to allow cancellation
+      await new Promise(resolve => {
+        typingTimeoutRef.current = setTimeout(resolve, 30);
+      });
     }
+    
+    isTypingRef.current = false;
   };
 
   const handleTabClick = async () => {
@@ -121,17 +143,20 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
     // Type the entire response letter by letter
     await typeText(fullResponse);
 
-    setIsTyping(false);
-    
-    const aiMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      type: "ai",
-      content: fullResponse,
-      timestamp: new Date(),
-    };
+    // Only update if typing wasn't cancelled
+    if (isTypingRef.current === false && !typingTimeoutRef.current) {
+      setIsTyping(false);
+      
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        type: "ai",
+        content: fullResponse,
+        timestamp: new Date(),
+      };
 
-    setMessages(prev => [...prev, aiMessage]);
-    setCurrentResponse("");
+      setMessages(prev => [...prev, aiMessage]);
+      setCurrentResponse("");
+    }
   };
 
   return (
