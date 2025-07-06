@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChatInterface } from "@/components/ChatInterface";
@@ -47,8 +48,12 @@ const InteractivePortfolio = () => {
       <div className="pt-24 pb-8 flex justify-center">
         <div className="relative group">
           <div className="w-32 h-32 rounded-full bg-gradient-to-r from-cyan-400 to-pink-500 p-1 group-hover:scale-105 transition-transform duration-300 relative">
-            <div className="w-full h-full rounded-full bg-black flex items-center justify-center border-2 border-cyan-400/30">
-              <span className="text-3xl font-bold text-cyan-400">PM</span>
+            <div className="w-full h-full rounded-full bg-black flex items-center justify-center border-2 border-cyan-400/30 overflow-hidden">
+              <img 
+                src="/lovable-uploads/515667a5-b652-4e46-b703-4846fb5750a3.png" 
+                alt="Paul Mwangi"
+                className="w-full h-full object-cover rounded-full"
+              />
             </div>
             {/* Circular Glowing Animation */}
             <div className="absolute inset-0 rounded-full animate-spin">
