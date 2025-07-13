@@ -9,34 +9,35 @@ const InteractivePortfolio = () => {
 
   const tabs = [
     { id: "about", label: "About" },
+    { id: "education", label: "Education" },
     { id: "skills", label: "Skills" },
     { id: "projects", label: "Projects" },
     { id: "experience", label: "Experience" },
-    { id: "help", label: "Help" },
+    { id: "ai", label: "AI/ML Interest" }
   ];
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
+    <div className="min-h-screen bg-black relative">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-cyan-500/20">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold text-cyan-400">Paul Mwangi</h1>
-          <div className="flex space-x-6">
+          <h1 className="text-base font-bold text-cyan-400">Paul Mwangi</h1>
+          <div className="flex space-x-3">
             <button
               onClick={() => navigate("/")}
-              className="text-cyan-400 hover:text-pink-400 transition-colors"
+              className="text-cyan-400 hover:text-pink-400 transition-colors text-sm"
             >
               Home
             </button>
             <button
               onClick={() => navigate("/portfolio")}
-              className="text-pink-400 font-semibold"
+              className="text-pink-400 font-semibold text-sm"
             >
               Portfolio
             </button>
             <button
               onClick={() => navigate("/contact")}
-              className="text-cyan-400 hover:text-pink-400 transition-colors"
+              className="text-cyan-400 hover:text-pink-400 transition-colors text-sm"
             >
               Contact
             </button>
@@ -47,20 +48,13 @@ const InteractivePortfolio = () => {
       {/* Profile Section with Circular Glow */}
       <div className="pt-24 pb-8 flex justify-center">
         <div className="relative group">
-          <div className="w-32 h-32 rounded-full bg-gradient-to-r from-cyan-400 to-pink-500 p-1 group-hover:scale-105 transition-transform duration-300 relative">
+          <div className="w-24 h-24 rounded-full bg-gradient-to-r from-cyan-400 to-pink-500 p-1 group-hover:scale-105 transition-transform duration-300 relative">
             <div className="w-full h-full rounded-full bg-black flex items-center justify-center border-2 border-cyan-400/30 overflow-hidden">
               <img 
                 src="/lovable-uploads/515667a5-b652-4e46-b703-4846fb5750a3.png" 
                 alt="Paul Mwangi"
                 className="w-full h-full object-cover rounded-full"
               />
-            </div>
-            {/* Circular Glowing Animation */}
-            <div className="absolute inset-0 rounded-full animate-spin">
-              <div className="w-full h-full rounded-full bg-gradient-to-r from-cyan-400 via-pink-500 via-purple-500 to-cyan-400 opacity-75 blur-md"></div>
-            </div>
-            <div className="absolute inset-2 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '3s' }}>
-              <div className="w-full h-full rounded-full bg-gradient-to-l from-pink-400 via-cyan-500 via-purple-400 to-pink-400 opacity-50 blur-lg"></div>
             </div>
           </div>
         </div>
@@ -74,7 +68,7 @@ const InteractivePortfolio = () => {
               <div key={tab.id} className="flex items-center">
                 <button
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+                  className={`px-4 py-2 rounded-full font-medium transition-all duration-300 text-sm ${
                     activeTab === tab.id
                       ? "bg-gradient-to-r from-cyan-500 to-pink-600 text-black shadow-lg shadow-cyan-500/25"
                       : "text-cyan-400 hover:text-pink-400 hover:bg-cyan-500/10"

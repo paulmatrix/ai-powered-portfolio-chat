@@ -3,6 +3,10 @@ import { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Send, HelpCircle } from "lucide-react";
+import { useChatMessage, usePortfolioSection } from "@/hooks/useApi";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { ErrorMessage } from "@/components/ui/error-message";
+import { apiService, type ChatMessage } from "@/services/api";
 
 interface Message {
   id: string;
@@ -17,68 +21,130 @@ interface ChatInterfaceProps {
 
 const tabContent = {
   about: [
-    "I'm Paul Mwangi, a passionate Software Engineer with over 5 years of experience in web development.",
-    "I specialize in building scalable web applications using modern technologies like React, Node.js, and TypeScript.",
-    "My journey in tech started with a curiosity about how things work under the hood, which led me to pursue computer science.",
-    "I believe in writing clean, maintainable code and creating user experiences that make a difference.",
-    "When I'm not coding, I enjoy exploring new technologies, contributing to open-source projects, and mentoring aspiring developers."
+    "👋 Hello! I'm Paul Mwangi",
+    "   A professional Software Developer with a strong foundation in Python, Django, and scalable web applications.",
+    "",
+    "🏗️ Technical Expertise",
+    "   I have experience building secure, cloud-ready systems with RESTful APIs, microservices, and AI integration in agile environments.",
+    "",
+    "🎯 Focus Areas",
+    "   My work focuses on backend development, intelligent systems, and scalable architecture across HR, eCommerce, and internal platforms.",
+    "",
+    "💡 Development Philosophy",
+    "   In every role, I prioritize clean code, modularity, and performance—building solutions that meet both technical and business goals.",
+    "",
+    "🚀 Beyond Development",
+    "   Outside development, I'm passionate about data, machine learning, and mentoring others in tech through open-source and community work."
   ],
+
   skills: [
-    "🚀 Frontend Development: React, TypeScript, Next.js, Tailwind CSS",
-    "⚡ Backend Development: Node.js, Express, Python, Django",
-    "🗄️ Databases: PostgreSQL, MongoDB, Redis, Supabase",
-    "☁️ Cloud & DevOps: AWS, Docker, Kubernetes, CI/CD pipelines",
-    "🔧 Tools & Technologies: Git, Jest, Cypress, Figma, Linux",
-    "🤝 Soft Skills: Team Leadership, Problem Solving, Communication, Agile Development"
+    "💻 Programming Languages",
+    "   Python, JavaScript, HTML, CSS",
+    "",
+    "🛠️ Frameworks & Tools",
+    "   Django, React, Bootstrap 5, REST APIs, CI/CD (GitHub Actions)",
+    "",
+    "📊 Data & Analysis",
+    "   Statistical Modelling, Risk Assessment, PostgreSQL, Data Visualization",
+    "",
+    "🤖 AI & Machine Learning",
+    "   NLP basics, LLM integration",
+    "",
+    "☁️ DevOps",
+    "   Docker, SSO, scalable multi-tenant systems",
+    "",
+    "🤝 Soft Skills",
+    "   Team Collaboration, Adaptability, Communication, Agile Development"
   ],
+
+
   projects: [
-    "🎯 E-Commerce Platform - Built a full-stack e-commerce solution using React and Node.js, handling 10k+ daily users",
-    "📊 Analytics Dashboard - Created a real-time data visualization platform using D3.js and WebSocket connections",
-    "🤖 AI Chat Application - Developed an intelligent chatbot using OpenAI's API and modern NLP techniques",
-    "🏢 Enterprise CRM - Built a comprehensive customer relationship management system for mid-size businesses",
-    "📱 Mobile App - Created a cross-platform mobile application using React Native and Firebase"
+    "🚀 HR Management System",
+    "   Architected a scalable HR platform with modules for payroll, attendance, and analytics using Django.",
+    "",
+    "🤖 Intelligent Employee Analytics",
+    "   Integrated AI-driven document processing and smart reporting into backend workflows.",
+    "",
+    "🛒 E-Commerce Features",
+    "   Designed and deployed service-oriented APIs for scalable, production-ready commerce apps.",
+    "",
+    "⚡ API Optimization",
+    "   Tuned Django REST APIs and PostgreSQL queries for performance under concurrent usage.",
+    "",
+    "🔧 CI/CD Pipelines",
+    "   Implemented secure, automated deployment pipelines with GitHub Actions and Docker."
   ],
+
+
   experience: [
-    "💼 Senior Software Engineer at TechCorp (2021-Present)",
-    "   • Led a team of 5 developers in building scalable web applications",
-    "   • Improved application performance by 40% through optimization techniques",
-    "   • Implemented CI/CD pipelines reducing deployment time by 60%",
+    "🏢 Skillmind Softwares Limited",
+    "   May 2025 - Present",
+    "   AI Software Developer (Django) • Parklands, Nairobi",
     "",
-    "🔧 Full Stack Developer at StartupXYZ (2019-2021)",
-    "   • Developed MVP products from concept to production",
-    "   • Built RESTful APIs serving 100k+ requests daily",
-    "   • Collaborated with cross-functional teams using Agile methodologies",
+    "   • Collaborated with a cross-functional team to architect and implement a scalable HR management platform with cloud-ready modules",
+    "     for HR System, Time & Attendance Management, and Payroll Management System.",
+    "   • Engineered backend services using Django and Python, emphasizing modular architecture, high performance, and secure multi-tenant",
+    "     support to facilitate future expansion into service-oriented applications.",
+    "   • Integrated AI-powered capabilities such as intelligent document processing and employee analytics while ensuring seamless incorporation of RESTful interfaces.",
+    "   • Implemented secure authentication protocols including SSO to streamline user access, reinforcing robust security practices in",
+    "     preparation for scalable microservice deployment.",
+    "   • Optimized REST API endpoints and PostgreSQL queries to ensure high performance under concurrent usage, aligning with modern",
+    "     cloud-based best practices.",
+    "   • Contributed to code reviews and CI/CD workflow enhancements, reinforcing continuous delivery and quality improvements in an agile",
+    "     development environment.",
     "",
-    "👨‍💻 Junior Developer at WebSolutions (2018-2019)",
-    "   • Created responsive websites using modern frontend frameworks",
-    "   • Maintained and optimized existing codebases",
-    "   • Participated in code reviews and best practices discussions"
+    "💼 SellyAfrica",
+    "   Jan 2023 - Mar 2025",
+    "   Software Developer • Kiambu, Nairobi",
+    "",
+    "   • Developed and deployed scalable web applications using Python and Django, aligning service-oriented design principles with",
+    "     production-grade performance.",
+    "   • Built responsive frontend solutions with HTML, CSS, Bootstrap 5, and React, ensuring high user engagement and accessibility across",
+    "     platforms.",
+    "   • Collaborated with cross-functional teams to deliver user-focused, integrated solutions within agile sprints, meeting tight deadlines and",
+    "     business objectives.",
+    "   • Designed and integrated RESTful APIs to enable seamless data flow between internal systems and third-party services, exemplifying",
+    "     service-driven architecture principles.",
+    "   • Diagnosed and resolved full-stack bugs, reinforcing application stability and performance, while contributing to CI/CD pipeline",
+    "     optimizations in a dynamic production setting.",
+    "",
+    "🤖 Outlier & Remotasks",
+    "   Jan 2023 - Dec 2023",
+    "   AI Data Trainer • Remote",
+    "",
+    "   • Analyzed and labeled large-scale datasets for machine learning model training, ensuring high-quality and consistent annotations.",
+    "   • Identified and resolved data inconsistencies, contributing to improved model accuracy and reduced error rates.",
+    "   • Collaborated with remote teams to meet tight annotation deadlines and project specifications across diverse AI domains.",
+    "   • Provided detailed feedback on data guidelines, helping refine labeling protocols and improve task clarity for future annotators.",
+    "   • Utilized platforms such as Remotasks, Labelbox, and internal annotation tools to handle various data types, including text, image, and",
+    "     speech."
   ],
-  help: [
-    "🎯 Welcome to my interactive portfolio! Here are some helpful prompts you can try:",
+  
+  education: [
+    "🎓 Kirinyaga University (2024)",
+    "   Bachelor of Science in Actuarial Science",
+    "   Second Class Upper Division Honors",
     "",
-    "💡 To learn about me:",
-    "• \"Tell me about yourself\"",
-    "• \"What's your background in tech?\"",
-    "• \"What do you enjoy doing when not coding?\"",
+    "📚 Academic Foundation",
+    "   I hold a Bachelor of Science degree in Actuarial Science from Kirinyaga University, graduating with Second Class Upper Division Honors.",
     "",
-    "🛠️ To explore my skills:",
-    "• \"What technologies do you work with?\"",
-    "• \"Show me your frontend skills\"",
-    "• \"What's your experience with databases?\"",
+    "🔬 Applied Knowledge",
+    "   This background gives me a strong foundation in mathematics, statistics, and risk modeling—skills that I apply in data-driven software engineering."
+  ],
+ 
+  ai: [
+    "🤖 AI & Machine Learning Journey",
+    "   I'm actively involved in machine learning as an AI Data Trainer, where I worked with Remotasks and Outlier.",
     "",
-    "🚀 To see my projects:",
-    "• \"What projects have you built?\"",
-    "• \"Tell me about your e-commerce platform\"",
-    "• \"Show me your most interesting project\"",
+    "📊 Data Annotation Expertise",
+    "   I annotated datasets across text, image, and speech, ensuring model quality through detailed and accurate labeling.",
     "",
-    "💼 To learn about my experience:",
-    "• \"What's your work experience?\"",
-    "• \"Tell me about your current role\"",
-    "• \"How did you start your career?\"",
+    "🔬 ML Workflow Understanding",
+    "   This experience helped me understand ML workflows, data pipelines, and the importance of clean, structured data.",
     "",
-    "✨ Pro tip: You can click on any tab above to automatically get information about that section!"
-  ]
+    "🚀 Future Goals",
+    "   I'm passionate about AI and plan to deepen my understanding of NLP, LLMs, and production-ready ML systems."
+  ],
 };
 
 export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
@@ -88,6 +154,10 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isTypingRef = useRef(false);
   const currentTabRef = useRef(activeTab);
+  
+  // API hooks
+  const chatMessage = useChatMessage();
+  const portfolioSection = usePortfolioSection();
 
   useEffect(() => {
     // Update current tab reference
@@ -153,26 +223,67 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
     setMessages([userMessage]);
     setIsTyping(true);
 
-    // Get content for current tab and join with line breaks
-    const content = tabContent[currentTab as keyof typeof tabContent] || [];
-    const fullResponse = content.join('\n');
-
-    // Type the entire response letter by letter
-    const completed = await typeText(fullResponse, currentTab);
-
-    // Only update if typing completed successfully and tab hasn't changed
-    if (completed && currentTabRef.current === currentTab) {
-      setIsTyping(false);
+    try {
+      // Try to get data from API first
+      const apiResponse = await portfolioSection.execute(currentTab);
       
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        type: "ai",
-        content: fullResponse,
-        timestamp: new Date(),
-      };
+      if (apiResponse && currentTabRef.current === currentTab) {
+        const fullResponse = apiResponse.join('\n');
+        const completed = await typeText(fullResponse, currentTab);
 
-      setMessages(prev => [...prev, aiMessage]);
-      setCurrentResponse("");
+        if (completed && currentTabRef.current === currentTab) {
+          setIsTyping(false);
+          
+          const aiMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            type: "ai",
+            content: fullResponse,
+            timestamp: new Date(),
+          };
+
+          setMessages(prev => [...prev, aiMessage]);
+          setCurrentResponse("");
+        }
+      } else {
+        // Fallback to static content if API fails
+        const content = tabContent[currentTab as keyof typeof tabContent] || [];
+        const fullResponse = content.join('\n');
+        const completed = await typeText(fullResponse, currentTab);
+
+        if (completed && currentTabRef.current === currentTab) {
+          setIsTyping(false);
+          
+          const aiMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            type: "ai",
+            content: fullResponse,
+            timestamp: new Date(),
+          };
+
+          setMessages(prev => [...prev, aiMessage]);
+          setCurrentResponse("");
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch portfolio data:', error);
+      // Fallback to static content
+      const content = tabContent[currentTab as keyof typeof tabContent] || [];
+      const fullResponse = content.join('\n');
+      const completed = await typeText(fullResponse, currentTab);
+
+      if (completed && currentTabRef.current === currentTab) {
+        setIsTyping(false);
+        
+        const aiMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          type: "ai",
+          content: fullResponse,
+          timestamp: new Date(),
+        };
+
+        setMessages(prev => [...prev, aiMessage]);
+        setCurrentResponse("");
+      }
     }
   };
 
@@ -180,18 +291,9 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
     <div className="max-w-4xl mx-auto">
       <Card className="bg-black/30 backdrop-blur-sm border-cyan-500/20 min-h-[500px] shadow-xl shadow-cyan-500/10">
         <div className="p-6 space-y-4">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`max-w-[80%] p-4 rounded-lg ${
-                  message.type === "user"
-                    ? "bg-gradient-to-r from-cyan-500 to-pink-600 text-black font-medium shadow-lg shadow-cyan-500/25"
-                    : "bg-black/40 text-cyan-100 border border-cyan-500/30 shadow-lg shadow-pink-500/10"
-                }`}
-              >
+          {messages.filter((message) => message.type === "ai").map((message) => (
+            <div key={message.id} className="w-full">
+              <div className="w-full px-2 p-4 rounded-lg bg-black/40 text-cyan-100 border border-cyan-500/30 shadow-lg shadow-pink-500/10">
                 <div className="whitespace-pre-line">{message.content}</div>
                 <div className="text-xs opacity-70 mt-2">
                   {message.timestamp.toLocaleTimeString()}
@@ -202,8 +304,8 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
 
           {/* Typing indicator and current response */}
           {(isTyping || currentResponse) && (
-            <div className="flex justify-start">
-              <div className="max-w-[80%] p-4 rounded-lg bg-black/40 text-cyan-100 border border-cyan-500/30 shadow-lg shadow-pink-500/10">
+            <div className="w-full">
+              <div className="w-full px-2 p-4 rounded-lg bg-black/40 text-cyan-100 border border-cyan-500/30 shadow-lg shadow-pink-500/10">
                 <div className="whitespace-pre-line">{currentResponse}</div>
                 {isTyping && (
                   <div className="flex items-center space-x-1 mt-2">
@@ -217,22 +319,6 @@ export const ChatInterface = ({ activeTab }: ChatInterfaceProps) => {
       </Card>
 
       {/* Input area */}
-      <div className="mt-4 flex items-center space-x-4">
-        <div className="flex-1 bg-black/30 backdrop-blur-sm border border-cyan-500/20 rounded-lg p-3 shadow-lg shadow-cyan-500/10">
-          <p className="text-cyan-300">
-            {activeTab === "help" 
-              ? "Use the example prompts above to explore my portfolio, or click on other tabs!"
-              : `Click on the tabs above to explore different sections, or ask me anything about my ${activeTab}!`
-            }
-          </p>
-        </div>
-        <Button
-          onClick={handleTabClick}
-          className="bg-gradient-to-r from-cyan-500 to-pink-600 hover:from-cyan-400 hover:to-pink-500 text-black font-bold shadow-xl shadow-cyan-500/25 hover:shadow-pink-500/25 border border-cyan-400/50"
-        >
-          {activeTab === "help" ? <HelpCircle className="w-4 h-4" /> : <Send className="w-4 h-4" />}
-        </Button>
-      </div>
     </div>
   );
 };
